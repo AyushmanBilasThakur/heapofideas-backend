@@ -1,0 +1,61 @@
+@access_token = 
+
+###
+GET http://localhost:3010/
+
+
+### CREATE A NEW USER
+POST http://localhost:3010/auth/create/email-and-password
+Content-Type: application/json
+
+{
+    "username": "Ayushman",
+    "email": "ayushmanbilasthakur@gmail.com",
+    "password": "@Yushman"
+}
+
+### RESEND Verification code to user
+
+POST http://localhost:3010/auth/resend-verification
+Content-Type: application/json
+Authorization: Auth eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmY1YjE2NzY5MDk1MjZkNjUzOWU3ZiIsImlhdCI6MTYzOTkzNzY4NCwiZXhwIjoxNjM5OTQxMjg0fQ.QHEoHnILQHTbFDAMv894x6Tv1lRzix5rSwyDOPE1kXc
+
+
+### LOGIN
+POST http://localhost:3010/auth/login/email-and-password
+Content-Type: application/json
+
+{
+    "email": "ayushmanbilasthakur@gmail.com",
+    "password": "@Yushman"
+}
+
+
+### Verify user
+POST http://localhost:3010/auth/verify
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF5dXNobWFuYmlsYXN0aGFrdXJAZ21haWwuY29tIiwiaWF0IjoxNjM5OTM4MTg5LCJleHAiOjE2Mzk5Mzg2Njl9.gBB6fXAvWAP8RiSojUjK4wT0Be0gKiwIz0IlsU7nh_A"
+}
+
+### CREATE A NEW IDEA
+POST http://localhost:3010/ideas/create
+Content-Type: application/json
+Authorization: Auth eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmY1YjE2NzY5MDk1MjZkNjUzOWU3ZiIsImlhdCI6MTYzOTkzNzY4NCwiZXhwIjoxNjM5OTQxMjg0fQ.QHEoHnILQHTbFDAMv894x6Tv1lRzix5rSwyDOPE1kXc
+
+{
+    "title": "Very third idea in heap of ideas",
+    "description": "This is the very special, very second idea in heap of ideas! This idea is there to cheer that everything can spark a new idea",
+    "tags": ["computer", "programming", "c"],
+    "isPublic": false
+}
+
+
+### GET MY IDEAS
+GET http://localhost:3010/ideas/my
+Authorization: Auth eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmY1YjE2NzY5MDk1MjZkNjUzOWU3ZiIsImlhdCI6MTYzOTkzNzY4NCwiZXhwIjoxNjM5OTQxMjg0fQ.QHEoHnILQHTbFDAMv894x6Tv1lRzix5rSwyDOPE1kXc
+
+
+### GET LIST OF IDEAS
+GET http://localhost:3010/ideas/all
