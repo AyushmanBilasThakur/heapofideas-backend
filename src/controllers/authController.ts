@@ -132,7 +132,11 @@ export const loginWithEmailAndPassword = async (req: Request, res: Response) => 
             expiresIn: "30d"
         })
 
-        res.cookie("refresh", refresh_token)
+        res.cookie("refresh", refresh_token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        })
 
         res.json({
             access_token,
