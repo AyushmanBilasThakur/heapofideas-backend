@@ -7,6 +7,13 @@ import authMiddleware, { authWithoutVerify } from "../midddlewares/authMiddlewar
 const authRouter = Router();
 
 authRouter.post(
+    "/checkusername",
+    body("username").notEmpty(),
+    validationMiddleware,
+    authController.checkUsername
+)
+
+authRouter.post(
     "/create/email-and-password",
     body("username").notEmpty(),
     body("email").isEmail(),
@@ -31,7 +38,7 @@ authRouter.post(
 )
 
 authRouter.post(
-    "/login/username- and-password",
+    "/login/username-and-password",
     body("username").notEmpty(),
     body("password").notEmpty(),
     validationMiddleware,
@@ -40,7 +47,6 @@ authRouter.post(
 
 authRouter.get(
     "/logout",
-    authMiddleware,
     authController.signOut
 )
 
@@ -83,7 +89,7 @@ authRouter.post(
 
 authRouter.get(
     '/user',
-    authMiddleware,
+    authWithoutVerify,
     authController.getUser
 )
 

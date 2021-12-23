@@ -129,7 +129,7 @@ export const updateIdea = async(req: Request, res: Response) => {
 
 export const deleteIdea = async(req: Request, res: Response) => {
     try {
-        const {id} = req.params; 
+        const {id} = req.body; 
         const idea = await Idea.findById(id);
         
         if(!idea){

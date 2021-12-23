@@ -1,8 +1,30 @@
 import axios from "axios";
 import { sign, verify } from "jsonwebtoken";
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import User from "../models/User";
 import { transport } from "../utils/nodemailerInit";
+
+
+export const checkUsername = async (req: Request, res: Response) => {
+    try {
+        const {username} = req.body;
+        const UserWithSameUsername = await User.findOne({username})
+        if(UserWithSameUsername){
+            return res.status(400).json({
+                message: "User with same username already exsists"
+            })
+        }
+        else{
+            return res.status(200).json({
+                message: "Username available"
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            messgae: "Something went wrong"
+        })
+    }
+}
 
 export const createUserWithEmailAndPassword = async(req: Request, res: Response) => {
     try {
@@ -43,7 +65,7 @@ export const createUserWithEmailAndPassword = async(req: Request, res: Response)
             text: `
                 Hi ${req.body.username},
 
-                Welcome to Heap of Ideas. Thanks for signing up with us. Your account needs to be verified before you can access all the functionality. Your verification code is ${process.env.BASE_CLIENT_URL + "activate/" + verificationCode}
+                Welcome to Heap of Ideas. Thanks for signing up with us. Your account needs to be verified before you can access all the functionality. Your verification code is ${process.env.BASE_CLIENT_URL + "verify/?token=" + verificationCode}
             `
         })
         res.json({
@@ -106,7 +128,7 @@ export const loginWithEmailAndPassword = async (req: Request, res: Response) => 
             expiresIn: "1h"
         })
 
-        const refresh_token = sign({id: user._id}, String(process.env.ACCESS_TOKEN_SECRET), {
+        const refresh_token = sign({id: user._id}, String(process.env.REFRESH_TOKEN_SECRET), {
             expiresIn: "30d"
         })
 
@@ -146,7 +168,7 @@ export const loginWithUsernameAndPassword = async (req: Request, res: Response) 
             expiresIn: "1h"
         })
 
-        const refresh_token = sign({id: user._id}, String(process.env.ACCESS_TOKEN_SECRET), {
+        const refresh_token = sign({id: user._id}, String(process.env.REFRESH_TOKEN_SECRET), {
             expiresIn: "30d"
         })
 
@@ -219,7 +241,7 @@ export const resendVerificationCode = async(req: Request, res: Response) => {
             text: `
             Hi ${user.username},
 
-            Welcome to eventually. Thanks for signing up with us. Your account needs to be verified before you can access all the functionality. Your verification code is ${process.env.BASE_CLIENT_URL + "activate/" + verificationCode}
+            Welcome to eventually. Thanks for signing up with us. Your account needs to be verified before you can access all the functionality. Your verification code is ${process.env.BASE_CLIENT_URL + "verify/?token=" + verificationCode}
             `
         })
         
@@ -279,7 +301,7 @@ export const resetRequest = async(req: Request, res: Response) => {
             message: "User not found!"
         })
 
-        const verificationCode = sign({email}, String(process.env.VERIFICATION_SECRET), {expiresIn: '480s'});
+        const verificationCode = sign({email}, String(process.env.VERIFICATION_TOKEN_SECRET), {expiresIn: '480s'});
 
         await User.findOneAndUpdate({email}, {verificationCode});
 
@@ -290,7 +312,7 @@ export const resetRequest = async(req: Request, res: Response) => {
             text: `
                 Hi ${user.username},
 
-                 You requested a password reset for your account in Heap of Ideas. Your verification code is ${process.env.BASE_CLIENT_URL + "password-reset-code/" + verificationCode}
+                 You requested a password reset for your account in Heap of Ideas. Your verification code is ${process.env.BASE_CLIENT_URL + "password-reset/?token=" + verificationCode}
             `
         })
 
@@ -329,7 +351,8 @@ export const resetPassword = async(req: Request, res: Response) => {
         })
 
     } catch (error) {
-        return res.json({
+        console.log(error);
+        return res.status(400).json({
             status: false,
             message: "Password can not be reset"
         })
@@ -377,8 +400,8 @@ export const refresh = async (req:Request, res:Response) => {
             return res.status(403).json({status: false, message: "Bad Cookie"})
 
         let info = {id: refresh_decode.id}
-        const access_token = sign(info, String(process.env.JWT_SECRET), {expiresIn: "1h"})
-        const refresh_token = sign(info, String(process.env.REFRESH_SECRET), {expiresIn: "30d"})
+        const access_token = sign(info, String(process.env.ACCESS_TOKEN_SECRET), {expiresIn: "1h"})
+        const refresh_token = sign(info, String(process.env.REFRESH_TOKEN_SECRET), {expiresIn: "30d"})
         
         res.cookie("refresh", refresh_token, {httpOnly: true})
 
@@ -390,6 +413,7 @@ export const refresh = async (req:Request, res:Response) => {
 
 
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             message: "Something went wrong in the server",
         })
