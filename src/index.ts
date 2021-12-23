@@ -14,7 +14,7 @@ app.use(morgan("dev"));
 app.use(cors({
     origin: [
         "http://localhost:3000",
-        "http://heapofideas.netlify.app"
+        "https://heapofideas.netlify.app"
     ],
     credentials: true
 }));
